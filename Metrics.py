@@ -440,7 +440,7 @@ def compute_upper_bound_with_availability_handler(
     service_rate,
     retrial_rate,
     availability,
-    threshold_of_large_system,
+    threshold_large_system,
 ):
     """_summary_
 
@@ -455,7 +455,7 @@ def compute_upper_bound_with_availability_handler(
     Returns:
         _type_: _description_
     """
-    if num_of_users >= threshold_of_large_system:
+    if num_of_users >= threshold_large_system:
         return compute_upper_bound_for_large_system_with_availability(
             num_of_users, arrival_rate, service_rate, retrial_rate, availability
         )
@@ -466,6 +466,15 @@ def compute_upper_bound_with_availability_handler(
 
 
 def ComputeAllMinServers(params, all_n):
+    """_summary_
+
+    Args:
+        params (_type_): _description_
+        all_n (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     results_min_servers = np.zeros(len(all_n)) + np.nan
     results_min_servers_lb = np.zeros(len(all_n)) + np.nan
     results_min_servers_ub = np.zeros(len(all_n)) + np.nan
@@ -519,11 +528,23 @@ def PlotAllPerformances(
     x_step_size,
     y_step_size,
 ):
-    plt.plot(all_n, results_min_servers, label="Exact")
+    """_summary_
+
+    Args:
+        params (_type_): _description_
+        all_n (_type_): _description_
+        results_min_servers (_type_): _description_
+        results_min_servers_lb (_type_): _description_
+        results_min_servers_ub (_type_): _description_
+        threshold (_type_): _description_
+        x_step_size (_type_): _description_
+        y_step_size (_type_): _description_
+    """
+    plt.plot(all_n, results_min_servers, label="Exact", marker="*")
     plt.plot(all_n, results_min_servers_lb, label="lower_bound")
     plt.plot(all_n, results_min_servers_ub, label="upper_bound")
     plt.title(
-        rf"$\lambda$={params['arrival_rate']}, $\mu$={params['service_rate']}, $\nu$={params['retrial_raer']}, threshold={int(threshold)}, $\bar\alpha$={params['given_alpha']}"
+        rf"$\lambda$={params['arrival_rate']}, $\mu$={params['service_rate']}, $\nu$={params['retrial_rate']}, threshold={int(threshold)}, $\bar\alpha$={params['given_alpha']}"
     )
     plt.gca().xaxis.set_major_locator(mticker.MultipleLocator(x_step_size))
     plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(y_step_size))
@@ -533,23 +554,23 @@ def PlotAllPerformances(
 
 
 if __name__ == "__main__":
-    params = {}
-    params["arrival_rate"] = 1
-    params["service_rate"] = 1
-    params["retrial_rate"] = 2
-    params["given_alpha"] = 0.9
+    Params = {}
+    Params["arrival_rate"] = 1
+    Params["service_rate"] = 1
+    Params["retrial_rate"] = 2
+    Params["given_alpha"] = 0.9
 
-    all_n = np.arange(2, 3000, 200)
-    results_min_servers, results_min_servers_lb, results_min_servers_ub, threshold = (
-        ComputeAllMinServers(params, all_n)
+    all_num_of_servers = np.arange(2, 12000, 1000)
+    min_servers, min_servers_lb, min_servers_ub, threshold_of_large_system = (
+        ComputeAllMinServers(Params, all_num_of_servers)
     )
     PlotAllPerformances(
-        params,
-        all_n,
-        results_min_servers,
-        results_min_servers_lb,
-        results_min_servers_ub,
-        threshold,
+        Params,
+        all_num_of_servers,
+        min_servers,
+        min_servers_lb,
+        min_servers_ub,
+        threshold_of_large_system,
         20,
-        2,
+        5,
     )
