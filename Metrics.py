@@ -532,33 +532,24 @@ def PlotAllPerformances(
     plt.close()
 
 
-def plot_alpha(m_array, results):
-    # m_array = np.arange(1, n)
-    # results_alpha = np.zeros((len(m_array)))
-    # for i, m in enumerate(m_array):
-    #     results_alpha[i] = ComputeAvailabilityHandler(m, n, lambda_, mu, nu)
-    # print(dict(zip(m_array, results_alpha)))
-    # given_service_levels = np.linspace(0.1, 0.999, 20)
-    # results_servers = np.zeros(len(given_service_levels), dtype = np.int16)
-    # for i, alpha in enumerate(given_service_levels):
-    #     results_servers[i] = FindMinimumNumOfServersForGivenAvilability(alpha, n, lambda_, mu, nu)
-
-    # plt.plot(given_service_levels, results_servers)
-    # plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(1))
-
-    plt.plot(m_array, results)
-    plt.gca().xaxis.set_major_locator(mticker.MultipleLocator(1))
-    plt.show()
-    plt.close()
-
-
 if __name__ == "__main__":
-    params={}
-    params['arrival_rate'] = 1
-    params['service_rate'] = 1
-    params['retrial_rate'] = 2
-    params['given_alpha'] = 0.9
+    params = {}
+    params["arrival_rate"] = 1
+    params["service_rate"] = 1
+    params["retrial_rate"] = 2
+    params["given_alpha"] = 0.9
 
-    all_n = np.arange(2, 4000, 100)
-    results_min_servers, results_min_servers_lb, results_min_servers_ub, threshold = ComputeAllMinServers(params, all_n)
-    PlotAllPerformances(params, all_n, results_min_servers, results_min_servers_lb, results_min_servers_ub, threshold, 20, 2)
+    all_n = np.arange(2, 3000, 200)
+    results_min_servers, results_min_servers_lb, results_min_servers_ub, threshold = (
+        ComputeAllMinServers(params, all_n)
+    )
+    PlotAllPerformances(
+        params,
+        all_n,
+        results_min_servers,
+        results_min_servers_lb,
+        results_min_servers_ub,
+        threshold,
+        20,
+        2,
+    )
