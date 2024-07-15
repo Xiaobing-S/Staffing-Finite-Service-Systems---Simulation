@@ -553,24 +553,198 @@ def PlotAllPerformances(
     plt.close()
 
 
+def perf_of_changing_lambda(params, all_vars):
+    num_of_cases = len(all_vars)
+    results_min_servers = np.zeros(num_of_cases) + np.nan
+    results_min_servers_lb = np.zeros(num_of_cases) + np.nan
+    results_min_servers_ub = np.zeros(num_of_cases) + np.nan
+
+    for i, arr in tqdm(enumerate(all_vars)):
+        threshold = compute_threshold_of_large_system(
+            arr, params["service_rate"], params["retrial_rate"], params["given_alpha"]
+        )
+        results_min_servers[i] = find_minimum_num_of_servers_for_given_avilability(
+            params["given_alpha"],
+            params["num_of_users"],
+            arr,
+            params["service_rate"],
+            params["retrial_rate"],
+        )
+        results_min_servers_lb[i] = (
+            compute_lower_bound_for_large_system_with_availability(
+                params["num_of_users"],
+                arr,
+                params["service_rate"],
+                params["retrial_rate"],
+                params["given_alpha"],
+            )
+        )
+        results_min_servers_ub[i] = compute_upper_bound_with_availability_handler(
+            params["num_of_users"],
+            arr,
+            params["service_rate"],
+            params["retrial_rate"],
+            params["given_alpha"],
+            threshold,
+        )
+    return (
+        results_min_servers,
+        results_min_servers_lb,
+        results_min_servers_ub,
+    )
+
+
+def perf_of_changing_mu(params, all_vars):
+    num_of_cases = len(all_vars)
+    results_min_servers = np.zeros(num_of_cases) + np.nan
+    results_min_servers_lb = np.zeros(num_of_cases) + np.nan
+    results_min_servers_ub = np.zeros(num_of_cases) + np.nan
+
+    for i, sev_rate in tqdm(enumerate(all_vars)):
+        threshold = compute_threshold_of_large_system(
+            params["arrival_rate"],
+            sev_rate,
+            params["retrial_rate"],
+            params["given_alpha"],
+        )
+        results_min_servers[i] = find_minimum_num_of_servers_for_given_avilability(
+            params["given_alpha"],
+            params["num_of_users"],
+            params["arrival_rate"],
+            sev_rate,
+            params["retrial_rate"],
+        )
+        results_min_servers_lb[i] = (
+            compute_lower_bound_for_large_system_with_availability(
+                params["num_of_users"],
+                params["arrival_rate"],
+                sev_rate,
+                params["retrial_rate"],
+                params["given_alpha"],
+            )
+        )
+        results_min_servers_ub[i] = compute_upper_bound_with_availability_handler(
+            params["num_of_users"],
+            params["arrival_rate"],
+            sev_rate,
+            params["retrial_rate"],
+            params["given_alpha"],
+            threshold,
+        )
+    return (
+        results_min_servers,
+        results_min_servers_lb,
+        results_min_servers_ub,
+    )
+
+
+def perf_of_changing_nu(params, all_vars):
+    num_of_cases = len(all_vars)
+    results_min_servers = np.zeros(num_of_cases) + np.nan
+    results_min_servers_lb = np.zeros(num_of_cases) + np.nan
+    results_min_servers_ub = np.zeros(num_of_cases) + np.nan
+
+    for i, retrial in tqdm(enumerate(all_vars)):
+        threshold = compute_threshold_of_large_system(
+            params["arrival_rate"],
+            params["service_rate"],
+            retrial,
+            params["given_alpha"],
+        )
+        results_min_servers[i] = find_minimum_num_of_servers_for_given_avilability(
+            params["given_alpha"],
+            params["num_of_users"],
+            params["arrival_rate"],
+            params["service_rate"],
+            retrial,
+        )
+        results_min_servers_lb[i] = (
+            compute_lower_bound_for_large_system_with_availability(
+                params["num_of_users"],
+                params["arrival_rate"],
+                params["service_rate"],
+                retrial,
+                params["given_alpha"],
+            )
+        )
+        results_min_servers_ub[i] = compute_upper_bound_with_availability_handler(
+            params["num_of_users"],
+            params["arrival_rate"],
+            params["service_rate"],
+            retrial,
+            params["given_alpha"],
+            threshold,
+        )
+    return (
+        results_min_servers,
+        results_min_servers_lb,
+        results_min_servers_ub,
+    )
+
+
+def plot_all_perf_changing_var(
+    params,
+    all_var,
+    results_min_servers,
+    results_min_servers_lb,
+    results_min_servers_ub,
+    x_step_size,
+    y_step_size,
+    x_lable="",
+    y_label="",
+):
+    """_summary_
+
+    Args:
+        params (_type_): _description_
+        all_var (_type_): _description_
+        results_min_servers (_type_): _description_
+        results_min_servers_lb (_type_): _description_
+        results_min_servers_ub (_type_): _description_
+        x_step_size (_type_): _description_
+        y_step_size (_type_): _description_
+    """
+    plt.plot(all_var, results_min_servers, label="Exact", marker="*")
+    plt.plot(all_var, results_min_servers_lb, label="lower_bound")
+    plt.plot(all_var, results_min_servers_ub, label="upper_bound")
+    plt.title(
+        rf"$n$={params['num_of_users']}, $\mu$={params['service_rate']}, $\nu$={params['retrial_rate']}, $\bar\alpha$={params['given_alpha']}"
+    )
+    plt.gca().xaxis.set_major_locator(mticker.MultipleLocator(x_step_size))
+    plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(y_step_size))
+    plt.legend()
+    plt.xlabel(x_lable)
+    plt.ylabel(y_label)
+    plt.show()
+    plt.close()
+
+
 if __name__ == "__main__":
     Params = {}
-    Params["arrival_rate"] = 1
+    # Params["arrival_rate"] = 1
     Params["service_rate"] = 1
-    Params["retrial_rate"] = 2
+    Params["retrial_rate"] = 1
     Params["given_alpha"] = 0.9
+    all_lambdas = np.linspace(0.1, 10, 30)
+    Params["num_of_users"] = 20
+    min_servers, min_servers_lb, min_servers_ub = perf_of_changing_lambda(
+        Params, all_lambdas
+    )
+    plot_all_perf_changing_var(
+        Params, all_lambdas, min_servers, min_servers_lb, min_servers_ub, 1, 2, r"$\lambda$", r"$m^*$"
+    )
 
-    all_num_of_servers = np.arange(2, 12000, 1000)
-    min_servers, min_servers_lb, min_servers_ub, threshold_of_large_system = (
-        ComputeAllMinServers(Params, all_num_of_servers)
-    )
-    PlotAllPerformances(
-        Params,
-        all_num_of_servers,
-        min_servers,
-        min_servers_lb,
-        min_servers_ub,
-        threshold_of_large_system,
-        20,
-        5,
-    )
+    # all_num_of_servers = np.arange(2, 12000, 1000)
+    # min_servers, min_servers_lb, min_servers_ub, threshold_of_large_system = (
+    #     ComputeAllMinServers(Params, all_num_of_servers)
+    # )
+    # PlotAllPerformances(
+    #     Params,
+    #     all_num_of_servers,
+    #     min_servers,
+    #     min_servers_lb,
+    #     min_servers_ub,
+    #     threshold_of_large_system,
+    #     20,
+    #     5,
+    # )
