@@ -394,7 +394,7 @@ def compute_lower_bound_for_large_system_with_availability(
         / availability
         * (arrival_rate * service_rate / retrial_rate)
     )
-    return np.ceil(
+    return np.floor(
         c_underline * num_of_users
         + service_rate
         * c_underline
