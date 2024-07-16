@@ -692,6 +692,7 @@ def plot_all_perf_changing_var(
     y_step_size,
     x_lable="",
     y_label="",
+    Dtype="lambda",
 ):
     """_summary_
 
@@ -704,12 +705,51 @@ def plot_all_perf_changing_var(
         x_step_size (_type_): _description_
         y_step_size (_type_): _description_
     """
-    plt.plot(all_var, results_min_servers, label="Exact", marker="*")
-    plt.plot(all_var, results_min_servers_lb, label="lower_bound")
-    plt.plot(all_var, results_min_servers_ub, label="upper_bound")
-    plt.title(
-        rf"$n$={params['num_of_users']}, $\mu$={params['service_rate']}, $\nu$={params['retrial_rate']}, $\bar\alpha$={params['given_alpha']}"
+    plt.scatter(
+        all_var,
+        results_min_servers,
+        label="Exact",
+        marker=".",
+        facecolors="none",
+        edgecolors="b",
+        s=5,
     )
+    plt.scatter(
+        all_var,
+        results_min_servers_lb,
+        label="lower_bound",
+        marker=".",
+        facecolors="none",
+        edgecolors="r",
+        s=50,
+    )
+    plt.scatter(
+        all_var,
+        results_min_servers_ub,
+        label="upper_bound",
+        marker=".",
+        facecolors="none",
+        edgecolors="g",
+        s=100,
+    )
+    if Dtype == "lambda":
+        plt.title(
+            rf"$n$={params['num_of_users']},"
+            rf"$\mu$={params['service_rate']},"
+            rf"$\nu$={params['retrial_rate']},"
+            rf"$\bar\alpha$={params['given_alpha']}"
+        )
+    elif Dtype == "mu":
+        plt.title(
+            rf"$n$={params['num_of_users']}, $\lambda$={params['arrival_rate']}, $\nu$={params['retrial_rate']}, $\bar\alpha$={params['given_alpha']}"
+        )
+    elif Dtype == "nu":
+        plt.title(
+            rf"$n$={params['num_of_users']}, $\mu$={params['service_rate']}, $\lambda$={params['arrival_rate']}, $\bar\alpha$={params['given_alpha']}"
+        )
+    else:
+        raise ValueError(f"Error in value of Dtype = {Dtype}")
+
     plt.gca().xaxis.set_major_locator(mticker.MultipleLocator(x_step_size))
     plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(y_step_size))
     plt.legend()
@@ -731,7 +771,15 @@ if __name__ == "__main__":
         Params, all_lambdas
     )
     plot_all_perf_changing_var(
-        Params, all_lambdas, min_servers, min_servers_lb, min_servers_ub, 1, 2, r"$\lambda$", r"$m^*$"
+        Params,
+        all_lambdas,
+        min_servers,
+        min_servers_lb,
+        min_servers_ub,
+        1,
+        2,
+        r"$\lambda$",
+        r"$m^*$",
     )
 
     # all_num_of_servers = np.arange(2, 12000, 1000)

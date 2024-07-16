@@ -419,7 +419,7 @@ class FiniteServiceSystem:
         while cur_time < total_time:
             next_event = self.find_next_event(cur_time)
             next_time_passed = next_event.accur_time - cur_time
-            
+
             if next_event.type == EventType.DONE:
                 self.user_station.process_all_busy_users(next_time_passed, next_event)
                 self.server_station.update(next_event, next_time_passed)
@@ -442,14 +442,14 @@ class FiniteServiceSystem:
                     logging.info(f"time: {cur_time}, got event={next_event.type}, event_time={next_event.accur_time},but user={next_event.user_id} cannot find available servers.")
             else:
                 raise ValueError(f"wrong event type = {next_event.type}")
-            
+
             cur_time = next_event.accur_time
             if cur_time > start_count_time:
                 if total_req_count > 0:
                     availability = total_service_count / total_req_count
                     time_points.append(cur_time)
                     result_avai.append(availability)
-        
+
         return availability, time_points, result_avai
 
     def find_next_event(self, cur_time):
@@ -490,4 +490,4 @@ class FiniteServiceSystem:
 #     plt.ylabel("availability")
 #     plt.legend()
 #     plt.show()
-#     plt.close() 
+#     plt.close()
