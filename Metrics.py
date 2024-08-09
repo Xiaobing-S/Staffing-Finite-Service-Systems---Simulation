@@ -305,11 +305,13 @@ def compute_general_upper_bound_with_given_availability(
     Returns:
         _type_: _description_
     """
-    return np.ceil(
-        availability
-        * retrial_rate
-        * num_of_users
-        / (availability * retrial_rate + (1 - availability) * service_rate)
+    return int(
+        np.ceil(
+            availability
+            * retrial_rate
+            * num_of_users
+            / (availability * retrial_rate + (1 - availability) * service_rate)
+        )
     )
 
 
@@ -328,16 +330,18 @@ def compute_general_lower_bound_with_given_availability(
     Returns:
         _type_: _description_
     """
-    return np.ceil(
-        arrival_rate
-        / (
+    return int(
+        np.ceil(
             arrival_rate
-            + service_rate
-            + (1 - availability)
-            / availability
-            * (arrival_rate * service_rate / retrial_rate)
+            / (
+                arrival_rate
+                + service_rate
+                + (1 - availability)
+                / availability
+                * (arrival_rate * service_rate / retrial_rate)
+            )
+            * num_of_users
         )
-        * num_of_users
     )
 
 
@@ -363,12 +367,17 @@ def compute_upper_bound_for_large_system_with_availability(
         / availability
         * (arrival_rate * service_rate / retrial_rate)
     )
-    return np.ceil(
-        c_underline * num_of_users
-        + 2
-        * service_rate
-        * np.sqrt(c_underline / (arrival_rate + service_rate))
-        / (np.sqrt(arrival_rate) - np.sqrt(c_underline * (arrival_rate + service_rate)))
+    return int(
+        np.ceil(
+            c_underline * num_of_users
+            + 2
+            * service_rate
+            * np.sqrt(c_underline / (arrival_rate + service_rate))
+            / (
+                np.sqrt(arrival_rate)
+                - np.sqrt(c_underline * (arrival_rate + service_rate))
+            )
+        )
     )
 
 
@@ -394,13 +403,15 @@ def compute_lower_bound_for_large_system_with_availability(
         / availability
         * (arrival_rate * service_rate / retrial_rate)
     )
-    return np.floor(
-        c_underline * num_of_users
-        + service_rate
-        * c_underline
-        / (
-            service_rate * c_underline
-            + retrial_rate * (1 - c_underline + 1 / num_of_users)
+    return int(
+        np.ceil(
+            c_underline * num_of_users
+            + service_rate
+            * c_underline
+            / (
+                service_rate * c_underline
+                + retrial_rate * (1 - c_underline + 1 / num_of_users)
+            )
         )
     )
 
@@ -759,40 +770,9 @@ def plot_all_perf_changing_var(
     plt.close()
 
 
-if __name__ == "__main__":
-    Params = {}
-    # Params["arrival_rate"] = 1
-    Params["service_rate"] = 1
-    Params["retrial_rate"] = 1
-    Params["given_alpha"] = 0.9
-    all_lambdas = np.linspace(0.1, 10, 30)
-    Params["num_of_users"] = 20
-    min_servers, min_servers_lb, min_servers_ub = perf_of_changing_lambda(
-        Params, all_lambdas
+def compute_c(arrival_rate, service_rate, retrial_rate, given_alpha):
+    return arrival_rate / (
+        arrival_rate
+        + service_rate
+        + (1 - given_alpha) / given_alpha * (arrival_rate * service_rate / retrial_rate)
     )
-    plot_all_perf_changing_var(
-        Params,
-        all_lambdas,
-        min_servers,
-        min_servers_lb,
-        min_servers_ub,
-        1,
-        2,
-        r"$\lambda$",
-        r"$m^*$",
-    )
-
-    # all_num_of_servers = np.arange(2, 12000, 1000)
-    # min_servers, min_servers_lb, min_servers_ub, threshold_of_large_system = (
-    #     ComputeAllMinServers(Params, all_num_of_servers)
-    # )
-    # PlotAllPerformances(
-    #     Params,
-    #     all_num_of_servers,
-    #     min_servers,
-    #     min_servers_lb,
-    #     min_servers_ub,
-    #     threshold_of_large_system,
-    #     20,
-    #     5,
-    # )
