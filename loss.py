@@ -52,13 +52,19 @@ def plot_gap_of_loss(given_alpha, lambda_, mu, nu, n_lb, n_ub, n_step=1):
             nu,
             True,
         )
-
-    plt.scatter(n_list, realized_alphas, label="reallized_alpha")
+    plt.figure(figsize=(10, 6))  # Adjust figure size as needed
+    plt.scatter(n_list, realized_alphas, label="alpha (fluid model)", color="blue")
     plt.xlabel(r"$n$")
+    plt.xlim(left=n_lb, right=n_ub + 1)  # Adjust xlim
     plt.ylabel(r"$\alpha$")
-    plt.axhline(y=given_alpha, label="given_alpha")
+    plt.axhline(y=given_alpha, label="given alpha", color="red")
     plt.title(rf"$\lambda$={lambda_}, $\mu$={mu}, $\nu$={nu}")
     plt.legend()
+
+    ax = plt.gca()
+    ax.tick_params(axis="x", pad=10)
+    step = (n_ub - n_lb) // 8
+    plt.xticks(np.arange(n_lb, n_ub + 1, step))  # Adjust tick fre
     plt.show()
     plt.close()
 
@@ -80,6 +86,7 @@ def plot_bounds_of_alpha(n, lambda_, mu, nu, n_step=1):
     plt.scatter(m_list, alphas_ub, label="ub", marker="o")
     plt.xlabel(r"$m$")
     plt.ylim([0, 1])
+    plt.xlim(left=0)
     plt.ylabel(r"$\alpha$")
     plt.title(rf"$\lambda$={lambda_}, $\mu$={mu}, $\nu$={nu}, $n$={n}")
     plt.legend()
@@ -87,5 +94,6 @@ def plot_bounds_of_alpha(n, lambda_, mu, nu, n_step=1):
 
 
 if __name__ == "__main__":
-    plot_gap_of_loss(given_alpha=0.5, lambda_=1, mu=1, nu=2, n_lb=2, n_ub=200, n_step=5)
-    plot_bounds_of_alpha(n=60, lambda_=1, mu=1, nu=2, n_step=2)
+    # plot_gap_of_loss(given_alpha=0.5, lambda_=1, mu=1, nu=2, n_lb=2, n_ub=200, n_step=5)
+    # plot_bounds_of_alpha(n=60, lambda_=1, mu=1, nu=2, n_step=2)
+    plot_gap_of_loss(given_alpha=0.2, lambda_=1, mu=1, nu=1, n_lb=2, n_ub=200, n_step=5)
